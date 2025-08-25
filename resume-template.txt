@@ -1,0 +1,263 @@
+%-------------------------
+% Resume in Latex
+% Author : Abey George
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\usepackage{graphicx}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+\RequirePackage{fontawesome}
+\usepackage{tikz}
+\usetikzlibrary{svg.path}
+
+
+\definecolor{cvblue}{HTML}{0E5484}
+\definecolor{black}{HTML}{130810}
+\definecolor{darkcolor}{HTML}{0F4539}
+\definecolor{cvgreen}{HTML}{3BD80D}
+\definecolor{taggreen}{HTML}{00E278}
+\definecolor{SlateGrey}{HTML}{2E2E2E}
+\definecolor{LightGrey}{HTML}{666666}
+\colorlet{name}{black}
+\colorlet{tagline}{darkcolor}
+\colorlet{heading}{darkcolor}
+\colorlet{headingrule}{cvblue}
+\colorlet{accent}{darkcolor}
+\colorlet{emphasis}{SlateGrey}
+\colorlet{body}{LightGrey}
+
+
+%----------FONT OPTIONS----------
+% sans-serif
+% \usepackage[sfdefault]{FiraSans}
+% \usepackage[sfdefault]{roboto}
+% \usepackage[sfdefault]{noto-sans}
+% \usepackage[default]{sourcesanspro}
+
+% serif
+% \usepackage{CormorantGaramond}
+% \usepackage{charter}
+
+
+% \pagestyle{fancy}
+% \fancyhf{}  % clear all header and footer fields
+% \fancyfoot{}
+% \renewcommand{\headrulewidth}{0pt}
+% \renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\classesList}[4]{
+    \item\small{
+        {#1 #2 #3 #4 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{\large#1} & \textbf{\small #2} \\
+      \textit{\large#3} & \textit{\small #4} \\
+      
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+
+\newcommand\sbullet[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{$\bullet$}}}}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING----------
+
+
+
+\begin{center}
+    \begin{tikzpicture}
+        \clip (0,0) circle(1.5cm);
+        \node[anchor=center] at (0,0) {\includegraphics[width=3cm]{profile.jpeg}};
+    \end{tikzpicture}
+    \\[1em]
+    {\Huge \scshape Brijesh Nishad} \\ \vspace{1pt}
+    Uttar Pradesh, Greater Noida \\ \vspace{1pt}
+    \small
+    \href{tel:9506563150}{\raisebox{-0.1\height}\faPhone\ \underline{+91-9506563150}} ~
+    \href{mailto:bnlv1212@gmail.com}{\raisebox{-0.2\height}\faEnvelope\ \underline{bnlv1212@gmail.com}} ~
+    \href{https://linkedin.com/in/brijesh-nishad/}{\raisebox{-0.2\height}\faLinkedinSquare\ \underline{Linkedin}} ~
+    \href{https://github.com/tecresearch}{\raisebox{-0.2\height}\faGithub\ \underline{Github}} ~
+    \href{https://www.hackerrank.com/profile/mrbrijesh}{\raisebox{-0.2\height}\faHackerrank\ \underline{HackerRank}} ~
+    \href{https://leetcode.com/u/mr_brijesh/}{\raisebox{-0.2\height}{\includegraphics[height=0.3cm, width=0.3cm]{leetcode.png}} \underline{LeetCode}}
+\end{center}
+
+
+
+%-----------EDUCATION-----------
+\section{EDUCATION}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {GNIOT, Greater Noida Institute of Technology, Gautam Buddha Nagar}{2021 – 2025}
+      {B.Tech - Computer Science and Engineering-IOT - \textbf{CGPA} - \textbf{7.43}}{Greater Noida, Uttar Pradesh}
+  \resumeSubHeadingListEnd
+  
+%   \resumeSubHeadingListStart
+%     \resumeSubheading
+%       {College Name}{MM YYYY -- MM YYYY}
+%       {Exam Name - Course Name  - \textbf{Percentage} - \textbf{xx\%}}{city, country}
+%   \resumeSubHeadingListEnd
+
+
+
+
+
+
+%----------PROJECTS-----------
+\section{PROJECTS}
+  \vspace{-5pt}
+  \resumeSubHeadingListStart
+  
+        \resumeProjectHeading
+{\textbf{\large{\underline{Auth Restful API - Backend}}} \href{https://api.tecresearch.in}{\raisebox{-0.1\height}\faExternalLink } $|$ \large{\underline{Spring Boot}}}{2024}\\ 
+\resumeItemListStart
+  \resumeItem {\normalsize {Formulated RESTful APIs, improving performance and enabling seamless data upto 100\%  communication.}}\resumeItem {\normalsize {Executed 4+ functionalities for creating, updating, and managing , reducing data processing time by 40\%.}}
+  \resumeItem {\normalsize {Integrated secure authentication, and 10+ alert systems, enhancing security and user engagement.}}
+  \resumeItem {\normalsize {Provided detailed documentation and 100\% error handling mechanisms, and reducing debugging time by 25\%.}}\resumeItem{\normalsize {Modernized guides and ensured complete fault-tolerance, cutting troubleshooting efforts by 25\%.}}
+\resumeItemListEnd\vspace{-13pt}
+\resumeProjectHeading {\textbf{\large{\underline{Taskmanager Web App}}} \href{https://tca.tecresearch.in}{\raisebox{-0.1\height}\faExternalLink} $|$ \large{\underline{React, MongoDB, Node.js, JWT}}}{2024}  
+\resumeItemListStart  
+  \resumeItem{\normalsize{Administered a user-friendly task management system utilizing React monitoring on a 24/7 basis.}}  
+  \resumeItem{\normalsize{Introduced  JWT authentication mechanisms to implementing 2+ role-based access  with 100\% error handling.}}  
+  \resumeItem{\normalsize{Initiated APIs to achieve a high accuracy upto 90\%,data handling.}}  
+  \resumeItem{\normalsize{Refined 10+ APIs to perform  Create, Read, Update, and Delete (CRUD) operations.} implementing} 
+  \resumeItem{\normalsize{Customized a monitoring dashboard that provides users with 9+ features  filtering.} with 90\%} 
+\resumeItemListEnd 
+\vspace{-12pt}
+\resumeProjectHeading  
+{\textbf{\large{\underline{IoT-Based Smart Electronic Voting Machine}}} \href{https://tca.tecresearch.in}{\raisebox{-0.1\height}\faExternalLink} $|$ \large{\underline{Arduino, ESP32, React.js, Fingerprint Module}}}{2024}  
+\resumeItemListStart  
+  \resumeItem{\normalsize{\text{Engineered} a smart voting system using  Arduino, ESP32, and a fingerprint , ensuring  candidate selection.}}  
+  \resumeItem{\normalsize{\text{Polished} biometric voter authentication with a \text{fingerprint module} to verify identities with \text{99.9\% }.}}  
+  \resumeItem{\normalsize{\text{Accelerated} a React-based web interface to monitor real-time voting data for \text{500+ users} simultaneously.}}  
+  \resumeItem{\normalsize{\text{Progressed} data transmission using ESP32, reducing latency by \text{40\%} for efficient result processing.}}  
+  \resumeItem{\normalsize{\text{Ensured} system reliability by implementing \text{ 10+ fail-safe mechanisms} for uninterrupted operation .}}  
+\resumeItemListEnd 
+%-----------PROGRAMMING SKILLS-----------
+\section{TECHNICAL SKILLS}
+\begin{itemize}[leftmargin=0.15in]
+     $\sbullet[.75] \hspace{0.1cm}$\textbf{Languages:} Java, C++, JavaScript, and SQL \newline
+    $\sbullet[.75] \hspace{0.1cm}$\textbf{Technologies/Frameworks:} HTML, CSS , Tailwind css , React js, Spring Boot Framework, Hibernate, JPA\newline
+    $\sbullet[.75] \hspace{0.1cm}$ \textbf{Developer Tools:} VS Code, Eclipse, Intellij Idea, Figma, Canva
+\end{itemize}
+\vspace{-15pt}
+
+
+% %-----------INVOLVEMENT---------------
+% \section{CODING PLATFORMS}implementing
+%     \resumeSubHeadingListStart
+%             \resumeItemListStart
+%                 \resumeItem{\normalsize{Solved \textbf{650+} Problems on \textbf{Leetcode}.
+%                 \href{https://leetcode.com/aman_2_0_2_3/}{\raisebox{-0.1\height}\faExternalLink }}}
+%                 \resumeItem{\normalsize{Solved \textbf{500+} Problems across \textbf{GeeksforGeeks} and \textbf{InterviewBit}.
+%                 \href{https://auth.geeksforgeeks.org/user/aman_2_0_2_3/practice}{\raisebox{-0.1\height}\faExternalLink }}}
+%                 \resumeItem{\normalsize{Codeforces Max Rating \textbf{1391} 
+%                 \href{https://codeforces.com/profile/abthecoder23}{\raisebox{-0.1\height}\faExternalLink }}}
+%                 % \resumeItem{\normalsize{Participation Certificate. \href{ParticipationCertificateLink.com}{\raisebox{-0.1\height}\faExternalLink }}}
+%             \resumeItemListEnd
+%     \resumeSubHeadingListEnd
+%  \vspace{-11pt}
+ 
+  %-----------CERTIFICATIONS---------------
+\section{CERTIFICATIONS}
+\begin{itemize}[leftmargin=0.15in]
+        $\sbullet[.75] \hspace{0.1cm}$ {\href{https://github.com/tecresearch/certificates/blob/main/c10.jpg}{Mastering Data Structure and Algorithms - Incapp\newline}} \hspace{2.59cm}\\
+        $\sbullet[.75] \hspace{0.1cm}$ {\href{https://incapp.in}{Java C++ and C Programming- Incapp and RCPL\newline}} \hspace{1.6cm}\\ 
+        $\sbullet[.75] \hspace{0.1cm}$ {\href{https://github.com/tecresearch/certificates/blob/main/c6.jpg}{Aptitude, Soft skills, Career skills \& life skills - TCPGLOBAL}} \hspace{1.6cm}\\
+\end{itemize}
+
+\section{\href{https://www.facebook.com/brijesh150}{EXTRACURRICULAR}}
+    \resumeSubHeadingListStart
+        \resumeItemListStart
+            \resumeItem{\normalsize{Led the Research \& Development Club as Coordinator (IOT Elite Club 2024), organizing \textbf{10+} events.}}
+            \resumeItem{\normalsize{Prestigious Best Research and Project Award from CPRC in 2024  by 15\%  for Domain Management System .}} \resumeItem{\normalsize{Secured first place in the highly competitive Technical Poster Competition in 2024.}}
+            \resumeItem{\normalsize{Orchestrated the 2022 Case-Based Study Competition, improving overall scores by 30\% through presentation..}}\resumeItem{\normalsize{Led a team to victory in  2023 Smart India Hackathon at GNIOT  boosting organizational prestige by 40\%.
+ .}}
+        \resumeItemListEnd
+    \resumeSubHeadingListEnd
+
+
+ \end{document}
+ 
