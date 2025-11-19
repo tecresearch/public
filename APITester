@@ -1,0 +1,211 @@
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+import javafx.concurrent.Task;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ApiTesterFX extends Application {
+
+    private TabPane tabPane = new TabPane();
+    private TextArea historyArea = new TextArea();
+    private boolean darkMode = false;
+    private List<String> history = new ArrayList<>();
+    private Scene scene;
+
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("JavaFX API Tester");
+
+        BorderPane root = new BorderPane();
+
+        // Menu Bar
+        MenuBar menuBar = new MenuBar();
+        Menu viewMenu = new Menu("View");
+        MenuItem toggleDarkMode = new MenuItem("Toggle Dark Mode");
+        MenuItem saveHistory = new MenuItem("Save History");
+        MenuItem loadHistory = new MenuItem("Load History");
+        viewMenu.getItems().addAll(toggleDarkMode, saveHistory, loadHistory);
+        menuBar.getMenus().add(viewMenu);
+        root.setTop(menuBar);
+
+        toggleDarkMode.setOnAction(e -> toggleDarkMode());
+        saveHistory.setOnAction(e -> saveHistory());
+        loadHistory.setOnAction(e -> loadHistory());
+
+        // History Panel
+        historyArea.setEditable(false);
+        historyArea.setPrefWidth(200);
+        root.setRight(historyArea);
+
+        // Tab Pane for requests
+        root.setCenter(tabPane);
+        addNewTab();
+
+        // New Tab Button
+        Button newTabButton = new Button("New Tab");
+        newTabButton.setOnAction(e -> addNewTab());
+        root.setBottom(newTabButton);
+
+        scene = new Scene(root, 1000, 700);
+        scene.getStylesheets().add(getClass().getResource("light.css").toExternalForm());
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private void addNewTab() {
+        BorderPane tabContent = new BorderPane();
+
+        // Top controls
+        HBox topControls = new HBox(10);
+        ComboBox<String> methodBox = new ComboBox<>();
+        methodBox.getItems().addAll("GET", "POST", "PUT", "DELETE", "PATCH");
+        methodBox.setValue("GET");
+
+        TextField urlField = new TextField("http://localhost:8080/api/test");
+        TextField tokenField = new TextField();
+        tokenField.setPromptText("JWT Token (optional)");
+
+        Button sendButton = new Button("Send");
+        Button clearButton = new Button("Clear");
+
+        topControls.getChildren().addAll(methodBox, urlField, tokenField, sendButton, clearButton);
+        topControls.setPadding(new Insets(10));
+
+        // Headers Table
+        TableView<String[]> headersTable = new TableView<>();
+        TableColumn<String[], String> headerCol = new TableColumn<>("Header");
+        TableColumn<String[], String> valueCol = new TableColumn<>("Value");
+        headersTable.getColumns().addAll(headerCol, valueCol);
+        headersTable.setPrefWidth(250);
+
+        // Request & Response Areas
+        TextArea requestArea = new TextArea();
+        requestArea.setPromptText("Request Body");
+        TextArea responseArea = new TextArea();
+        responseArea.setEditable(false);
+
+        SplitPane splitPane = new SplitPane(new ScrollPane(requestArea), new ScrollPane(responseArea));
+        splitPane.setDividerPositions(0.3);
+
+        tabContent.setTop(topControls);
+        tabContent.setLeft(headersTable);
+        tabContent.setCenter(splitPane);
+
+        sendButton.setOnAction(e -> sendRequest(methodBox.getValue(), urlField.getText(), tokenField.getText(), requestArea.getText(), responseArea));
+        clearButton.setOnAction(e -> {
+            requestArea.clear();
+            responseArea.clear();
+        });
+
+        Tab tab = new Tab("Request " + (tabPane.getTabs().size() + 1), tabContent);
+        tabPane.getTabs().add(tab);
+    }
+
+    private void sendRequest(String method, String urlString, String token, String body, TextArea responseArea) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                try {
+                    URL url = new URL(urlString);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod(method);
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    if (!token.isEmpty()) {
+                        conn.setRequestProperty("Authorization", "Bearer " + token);
+                    }
+
+                    if (!method.equals("GET") && !method.equals("DELETE")) {
+                        conn.setDoOutput(true);
+                        try (OutputStream os = conn.getOutputStream()) {
+                            os.write(body.getBytes());
+                        }
+                    }
+
+                    int responseCode = conn.getResponseCode();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(
+                            responseCode >= 200 && responseCode < 300 ? conn.getInputStream() : conn.getErrorStream()
+                    ));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line).append("\n");
+                    }
+
+                    history.add(method + " " + urlString + " -> " + responseCode);
+                    return "Status: " + responseCode + "\n" + formatJson(response.toString());
+                } catch (Exception ex) {
+                    return "Error: " + ex.getMessage();
+                }
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            responseArea.setText(task.getValue());
+            updateHistoryArea();
+        });
+        new Thread(task).start();
+    }
+
+    private String formatJson(String json) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Object obj = mapper.readValue(json, Object.class);
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+        } catch (Exception e) {
+            return json;
+        }
+    }
+
+    private void toggleDarkMode() {
+        scene.getStylesheets().clear();
+        if (darkMode) {
+            scene.getStylesheets().add(getClass().getResource("light.css").toExternalForm());
+        } else {
+            scene.getStylesheets().add(getClass().getResource("dark.css").toExternalForm());
+        }
+        darkMode = !darkMode;
+    }
+
+    private void updateHistoryArea() {
+        StringBuilder sb = new StringBuilder();
+        for (String h : history) sb.append(h).append("\n");
+        historyArea.setText(sb.toString());
+    }
+
+    private void saveHistory() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("history.txt"))) {
+            for (String h : history) {
+                writer.write(h);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadHistory() {
+        history.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader("history.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                history.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        updateHistoryArea();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
