@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI User Management Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #ef233c;
+            --border-radius: 10px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .developer-info {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+        }
+        
+        /* Main container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+        
+        /* Users section */
+        .users-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        .section-header h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+        
+        /* Table */
+        .users-table-container {
+            overflow-x: auto;
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .users-table th {
+            background-color: var(--light-gray);
+            color: var(--dark);
+            font-weight: 600;
+            text-align: left;
+            padding: 1rem;
+        }
+        
+        .users-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .users-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        
+        .user-cell {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info h4 {
+            font-size: 1rem;
+        }
+        
+        .user-info p {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+        
+        .pagination button {
+            background-color: white;
+            border: 1px solid var(--light-gray);
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .pagination button.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .pagination button:hover:not(.active) {
+            background-color: var(--light-gray);
+        }
+        
+        /* Chat button */
+        .chat-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 99;
+            transition: var(--transition);
+        }
+        
+        .chat-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Chat popup */
+        .chat-popup {
+            position: fixed;
+            bottom: 5rem;
+            right: 2rem;
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-popup.active {
+            display: flex;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-header h3 {
+            font-size: 1.2rem;
+        }
+        
+        .close-chat {
+            background: rgba(255, 255, 255, 0.2);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .chat-body {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 0.8rem 1rem;
+            border-radius: 18px;
+            font-size: 0.95rem;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--primary);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .ai-message {
+            align-self: flex-start;
+            background-color: var(--light-gray);
+            color: var(--dark);
+            border-bottom-left-radius: 5px;
+        }
+        
+        .chat-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        .chat-input:focus {
+            border-color: var(--primary);
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        /* Stats section */
+        .stats-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            height: fit-content;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            text-align: center;
+            border-top: 4px solid var(--primary);
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-popup {
+                width: 350px;
+                height: 500px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-popup {
+                width: calc(100% - 2rem);
+                right: 1rem;
+                bottom: 1rem;
+                height: 450px;
+            }
+            
+            .chat-btn {
+                right: 1rem;
+                bottom: 1rem;
+            }
+        }
+        
+        /* Loader */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--light-gray);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--light-gray);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="logo-text">
+                <h1>AI User Management Portal</h1>
+                <p>Powered by ChatGPT with User Context Integration</p>
+            </div>
+        </div>
+        <div class="developer-info">
+            Developed by <strong>Brijesh Nishad</strong> | FullStack Java Developer
+        </div>
+    </header>
+    
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Users Section -->
+        <section class="users-section">
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> User Management</h2>
+                <button class="btn btn-primary" id="addUserBtn">
+                    <i class="fas fa-plus"></i> Add New User
+                </button>
+            </div>
+            
+            <div class="users-table-container">
+                <table class="users-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Location</th>
+                            <th>Gender</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be loaded here -->
+                    </tbody>
+                </table>
+                
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i class="fas fa-user-slash"></i>
+                    <h3>No Users Found</h3>
+                    <p>Add your first user to get started</p>
+                </div>
+            </div>
+            
+            <div class="pagination" id="pagination">
+                <!-- Pagination will be generated here -->
+            </div>
+        </section>
+        
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <h2><i class="fas fa-chart-bar"></i> System Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalUsers">0</h3>
+                    <p>Total Users</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="maleUsers">0</h3>
+                    <p>Male Users</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="femaleUsers">0</h3>
+                    <p>Female Users</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="hintCount">0</h3>
+                    <p>AI Hint Users</p>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 2rem;">
+                <label for="apiStatus">API Status</label>
+                <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div id="userApiStatus" style="width: 12px; height: 12px; border-radius: 50%; background-color: #ccc;"></div>
+                        <span>User API</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div id="aiApiStatus" style="width: 12px; height: 12px; border-radius: 50%; background-color: #ccc;"></div>
+                        <span>AI API</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Chat Button -->
+    <div class="chat-btn" id="chatBtn">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+    
+    <!-- Chat Popup -->
+    <div class="chat-popup" id="chatPopup">
+        <div class="chat-header">
+            <h3><i class="fas fa-robot"></i> AI Assistant</h3>
+            <div class="close-chat" id="closeChat">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="message ai-message">
+                Hello! I'm your AI assistant. I have access to user data and can help answer questions about the users in the system. How can I assist you today?
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Ask me about users...">
+            <button class="btn btn-primary" id="sendChatBtn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Add/Edit User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New User</h3>
+                <div class="close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone *</label>
+                            <input type="tel" id="phone" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth</label>
+                            <input type="date" id="dateOfBirth" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" class="form-control">
+                                <option value="">Select Gender</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin: 1.5rem 0 1rem; color: var(--primary);">Address</h4>
+                    
+                    <div class="form-group">
+                        <label for="line1">Address Line 1</label>
+                        <input type="text" id="line1" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="line2">Address Line 2</label>
+                        <input type="text" id="line2" class="form-control">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <input type="text" id="state" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="country">Country</label>
+                            <input type="text" id="country" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="postalCode">Postal Code</label>
+                            <input type="text" id="postalCode" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="userId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveUserBtn">Save User</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Deletion</h3>
+                <div class="close-modal" id="closeDeleteModal">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+                <p><strong id="deleteUserName"></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelDeleteBtn">Cancel</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Delete User</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:8080';
+        const USERS_API = `${API_BASE_URL}/api/users`;
+        const AI_API = `${API_BASE_URL}/ai`;
+        
+        // Global state
+        let currentPage = 0;
+        let pageSize = 10;
+        let totalUsers = 0;
+        let currentUserId = null;
+        let usersData = [];
+        
+        // DOM Elements
+        const usersTableBody = document.getElementById('usersTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const pagination = document.getElementById('pagination');
+        const addUserBtn = document.getElementById('addUserBtn');
+        const userModal = document.getElementById('userModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveUserBtn = document.getElementById('saveUserBtn');
+        const userForm = document.getElementById('userForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const deleteModal = document.getElementById('deleteModal');
+        const closeDeleteModal = document.getElementById('closeDeleteModal');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const deleteUserName = document.getElementById('deleteUserName');
+        const chatBtn = document.getElementById('chatBtn');
+        const chatPopup = document.getElementById('chatPopup');
+        const closeChat = document.getElementById('closeChat');
+        const chatBody = document.getElementById('chatBody');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        
+        // Stats elements
+        const totalUsersEl = document.getElementById('totalUsers');
+        const maleUsersEl = document.getElementById('maleUsers');
+        const femaleUsersEl = document.getElementById('femaleUsers');
+        const hintCountEl = document.getElementById('hintCount');
+        const userApiStatusEl = document.getElementById('userApiStatus');
+        const aiApiStatusEl = document.getElementById('aiApiStatus');
+        
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUsers();
+            checkApiStatus();
+            
+            // Modal events
+            addUserBtn.addEventListener('click', openAddUserModal);
+            closeModal.addEventListener('click', closeUserModal);
+            cancelBtn.addEventListener('click', closeUserModal);
+            saveUserBtn.addEventListener('click', saveUser);
+            closeDeleteModal.addEventListener('click', closeDeleteModalFunc);
+            cancelDeleteBtn.addEventListener('click', closeDeleteModalFunc);
+            confirmDeleteBtn.addEventListener('click', deleteUser);
+            
+            // Chat events
+            chatBtn.addEventListener('click', toggleChatPopup);
+            closeChat.addEventListener('click', toggleChatPopup);
+            sendChatBtn.addEventListener('click', sendChatMessage);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendChatMessage();
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === userModal) closeUserModal();
+                if (e.target === deleteModal) closeDeleteModalFunc();
+            });
+        });
+        
+        // Load users from API
+        async function loadUsers() {
+            try {
+                showLoaderInTable();
+                const response = await fetch(`${USERS_API}?page=${currentPage}&size=${pageSize}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    usersData = data.content || [];
+                    totalUsers = data.totalElements || 0;
+                    
+                    renderUsersTable();
+                    updatePagination();
+                    updateStats();
+                    userApiStatusEl.style.backgroundColor = '#4ade80'; // Green for active
+                } else {
+                    throw new Error('Failed to fetch users');
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                usersTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: ${getComputedStyle(document.documentElement).getPropertyValue('--danger')}; padding: 2rem;">
+                            <i class="fas fa-exclamation-triangle"></i> Failed to load users. Please check API connection.
+                        </td>
+                    </tr>
+                `;
+                userApiStatusEl.style.backgroundColor = '#ef4444'; // Red for error
+            }
+        }
+        
+        // Check API status
+        async function checkApiStatus() {
+            try {
+                // Check User API
+                const userResponse = await fetch(`${USERS_API}?page=0&size=1`);
+                if (userResponse.ok) {
+                    userApiStatusEl.style.backgroundColor = '#4ade80'; // Green
+                } else {
+                    userApiStatusEl.style.backgroundColor = '#ef4444'; // Red
+                }
+                
+                // Check AI API
+                const aiResponse = await fetch(`${AI_API}?q=test`);
+                if (aiResponse.ok) {
+                    aiApiStatusEl.style.backgroundColor = '#4ade80'; // Green
+                } else {
+                    aiApiStatusEl.style.backgroundColor = '#ef4444'; // Red
+                }
+            } catch (error) {
+                console.error('Error checking API status:', error);
+                userApiStatusEl.style.backgroundColor = '#ef4444';
+                aiApiStatusEl.style.backgroundColor = '#ef4444';
+            }
+        }
+        
+        // Render users table
+        function renderUsersTable() {
+            if (usersData.length === 0) {
+                usersTableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            usersTableBody.innerHTML = '';
+            
+            usersData.forEach(user => {
+                const initials = (user.firstName?.charAt(0) || '') + (user.lastName?.charAt(0) || '');
+                const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+                const location = user.address ? `${user.address.city || ''}, ${user.address.country || ''}`.replace(/^,\s*|\s*,/g, '') : 'N/A';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar">${initials || '?'}</div>
+                            <div class="user-info">
+                                <h4>${fullName || 'Unknown User'}</h4>
+                                <p>ID: ${user.id}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${user.email || 'N/A'}</td>
+                    <td>${user.phone || 'N/A'}</td>
+                    <td>${location}</td>
+                    <td>${user.gender || 'N/A'}</td>
+                    <td>
+                        <div class="actions-cell">
+                            <button class="btn btn-outline btn-small edit-btn" data-id="${user.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-small delete-btn" data-id="${user.id}" data-name="${fullName}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                usersTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => openEditUserModal(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => openDeleteModal(btn.dataset.id, btn.dataset.name));
+            });
+        }
+        
+        // Update pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(totalUsers / pageSize);
+            pagination.innerHTML = '';
+            
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.disabled = currentPage === 0;
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 0) {
+                    currentPage--;
+                    loadUsers();
+                }
+            });
+            pagination.appendChild(prevBtn);
+            
+            // Page buttons
+            for (let i = 0; i < totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i + 1;
+                if (i === currentPage) {
+                    pageBtn.classList.add('active');
+                }
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    loadUsers();
+                });
+                pagination.appendChild(pageBtn);
+            }
+            
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.disabled = currentPage === totalPages - 1 || totalPages === 0;
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages - 1) {
+                    currentPage++;
+                    loadUsers();
+                }
+            });
+            pagination.appendChild(nextBtn);
+        }
+        
+        // Update stats
+        function updateStats() {
+            totalUsersEl.textContent = totalUsers;
+            
+            const maleCount = usersData.filter(user => user.gender === 'MALE').length;
+            const femaleCount = usersData.filter(user => user.gender === 'FEMALE').length;
+            
+            maleUsersEl.textContent = maleCount;
+            femaleUsersEl.textContent = femaleCount;
+            
+            // For hint count, we'll fetch from AI API to get actual count
+            fetch(`${AI_API}?q=test`)
+                .then(response => response.json())
+                .then(data => {
+                    hintCountEl.textContent = data.hintUsersCount || 0;
+                })
+                .catch(() => {
+                    hintCountEl.textContent = 'N/A';
+                });
+        }
+        
+        // User Modal Functions
+        function openAddUserModal() {
+            modalTitle.textContent = 'Add New User';
+            userForm.reset();
+            document.getElementById('userId').value = '';
+            userModal.classList.add('active');
+        }
+        
+        function openEditUserModal(userId) {
+            const user = usersData.find(u => u.id == userId);
+            if (!user) return;
+            
+            modalTitle.textContent = 'Edit User';
+            document.getElementById('userId').value = user.id;
+            document.getElementById('firstName').value = user.firstName || '';
+            document.getElementById('lastName').value = user.lastName || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('phone').value = user.phone || '';
+            document.getElementById('dateOfBirth').value = user.dateOfBirth || '';
+            document.getElementById('gender').value = user.gender || '';
+            
+            if (user.address) {
+                document.getElementById('line1').value = user.address.line1 || '';
+                document.getElementById('line2').value = user.address.line2 || '';
+                document.getElementById('city').value = user.address.city || '';
+                document.getElementById('state').value = user.address.state || '';
+                document.getElementById('country').value = user.address.country || '';
+                document.getElementById('postalCode').value = user.address.postalCode || '';
+            } else {
+                document.getElementById('line1').value = '';
+                document.getElementById('line2').value = '';
+                document.getElementById('city').value = '';
+                document.getElementById('state').value = '';
+                document.getElementById('country').value = '';
+                document.getElementById('postalCode').value = '';
+            }
+            
+            userModal.classList.add('active');
+        }
+        
+        function closeUserModal() {
+            userModal.classList.remove('active');
+        }
+        
+        async function saveUser() {
+            // Form validation
+            if (!userForm.checkValidity()) {
+                userForm.reportValidity();
+                return;
+            }
+            
+            const userId = document.getElementById('userId').value;
+            const userData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                dateOfBirth: document.getElementById('dateOfBirth').value || null,
+                gender: document.getElementById('gender').value || null,
+                address: {
+                    line1: document.getElementById('line1').value || null,
+                    line2: document.getElementById('line2').value || null,
+                    city: document.getElementById('city').value || null,
+                    state: document.getElementById('state').value || null,
+                    country: document.getElementById('country').value || null,
+                    postalCode: document.getElementById('postalCode').value || null
+                }
+            };
+            
+            try {
+                saveUserBtn.innerHTML = '<span class="loader"></span> Saving...';
+                saveUserBtn.disabled = true;
+                
+                let response;
+                if (userId) {
+                    // Update existing user
+                    response = await fetch(`${USERS_API}/${userId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(userData)
+                    });
+                } else {
+                    // Create new user
+                    response = await fetch(USERS_API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(userData)
+                    });
+                }
+                
+                if (response.ok) {
+                    closeUserModal();
+                    loadUsers();
+                    showNotification(`User ${userId ? 'updated' : 'created'} successfully!`, 'success');
+                } else if (response.status === 409) {
+                    showNotification('A user with this email already exists!', 'error');
+                } else {
+                    throw new Error('Failed to save user');
+                }
+            } catch (error) {
+                console.error('Error saving user:', error);
+                showNotification('Failed to save user. Please try again.', 'error');
+            } finally {
+                saveUserBtn.innerHTML = 'Save User';
+                saveUserBtn.disabled = false;
+            }
+        }
+        
+        // Delete Modal Functions
+        function openDeleteModal(userId, userName) {
+            currentUserId = userId;
+            deleteUserName.textContent = userName || 'this user';
+            deleteModal.classList.add('active');
+        }
+        
+        function closeDeleteModalFunc() {
+            currentUserId = null;
+            deleteModal.classList.remove('active');
+        }
+        
+        async function deleteUser() {
+            try {
+                confirmDeleteBtn.innerHTML = '<span class="loader"></span> Deleting...';
+                confirmDeleteBtn.disabled = true;
+                
+                const response = await fetch(`${USERS_API}/${currentUserId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    closeDeleteModalFunc();
+                    loadUsers();
+                    showNotification('User deleted successfully!', 'success');
+                } else if (response.status === 404) {
+                    showNotification('User not found!', 'error');
+                } else {
+                    throw new Error('Failed to delete user');
+                }
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                showNotification('Failed to delete user. Please try again.', 'error');
+            } finally {
+                confirmDeleteBtn.innerHTML = 'Delete User';
+                confirmDeleteBtn.disabled = false;
+            }
+        }
+        
+        // Chat Functions
+        function toggleChatPopup() {
+            chatPopup.classList.toggle('active');
+            if (chatPopup.classList.contains('active')) {
+                chatInput.focus();
+            }
+        }
+        
+        async function sendChatMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessageToChat(message, 'user');
+            chatInput.value = '';
+            
+            try {
+                // Show typing indicator
+                const typingIndicator = document.createElement('div');
+                typingIndicator.className = 'message ai-message';
+                typingIndicator.innerHTML = '<span class="loader"></span> Thinking...';
+                chatBody.appendChild(typingIndicator);
+                chatBody.scrollTop = chatBody.scrollHeight;
+                
+                // Call AI API
+                const response = await fetch(`${AI_API}?q=${encodeURIComponent(message)}`);
+                
+                // Remove typing indicator
+                typingIndicator.remove();
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addMessageToChat(data.result || 'No response from AI.', 'ai');
+                } else {
+                    addMessageToChat('Sorry, I encountered an error. Please try again.', 'ai');
+                }
+            } catch (error) {
+                console.error('Error sending chat message:', error);
+                addMessageToChat('Unable to connect to AI service. Please check your connection.', 'ai');
+            }
+        }
+        
+        function addMessageToChat(text, sender) {
+            const messageEl = document.createElement('div');
+            messageEl.className = `message ${sender}-message`;
+            messageEl.textContent = text;
+            chatBody.appendChild(messageEl);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+        
+        // Utility Functions
+        function showLoaderInTable() {
+            usersTableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem;">
+                        <span class="loader"></span> Loading users...
+                    </td>
+                </tr>
+            `;
+        }
+        
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: var(--border-radius);
+                color: white;
+                font-weight: 600;
+                box-shadow: var(--box-shadow);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            // Set background color based on type
+            if (type === 'success') {
+                notification.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--success');
+            } else if (type === 'error') {
+                notification.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--danger');
+            } else {
+                notification.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Add CSS for animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
