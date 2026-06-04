@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Manager</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(160deg, #f0f4ff 0%, #faf5ff 30%, #fdf2f8 60%, #f0f9ff 100%);
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -30%;
+            width: 80%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -40%;
+            right: -25%;
+            width: 70%;
+            height: 90%;
+            background: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        app-root {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 520px;
+        }
+    </style>
+</head>
+<body>
+    <app-root></app-root>
+
+    <script type="module">
+        import {
+            LitElement,
+            html,
+            css
+        } from 'https://cdn.jsdelivr.net/npm/lit@3.2.1/+esm';
+
+        class AppRoot extends LitElement {
+            static properties = {
+                step: { type: Number },
+                token: { type: String },
+                username: { type: String },
+                password: { type: String },
+                templateName: { type: String },
+                subject: { type: String },
+                body: { type: String },
+                templateId: { type: String },
+                userName: { type: String },
+                userEmail: { type: String },
+                userPhone: { type: String },
+                templates: { type: Array },
+                error: { type: String },
+                success: { type: String },
+                loading: { type: Boolean },
+                createdTemplateId: { type: String },
+            };
+
+            constructor() {
+                super();
+                this.step = 1;
+                this.token = localStorage.getItem('jwt_token') || '';
+                this.username = '';
+                this.password = '';
+                this.templateName = '';
+                this.subject = '';
+                this.body = '';
+                this.templateId = '';
+                this.userName = '';
+                this.userEmail = '';
+                this.userPhone = '';
+                this.templates = [];
+                this.error = '';
+                this.success = '';
+                this.loading = false;
+                this.createdTemplateId = '';
+            }
+
+            static styles = css`
+            :host {
+                display: block;
+                width: 100%;
+            }
+
+            .app-wrapper {
+                animation: fadeSlideIn 0.4s ease-out;
+            }
+
+            @keyframes fadeSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(16px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .card {
+                background: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.82) 100%);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 20px;
+                padding: 32px 28px;
+                box-shadow:
+                    0 4px 24px rgba(0, 0, 0, 0.06),
+                    0 1px 4px rgba(0, 0, 0, 0.04),
+                    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+                border: 1px solid rgba(209, 213, 219, 0.4);
+                transition: all 0.3s ease;
+            }
+
+            .card:hover {
+                box-shadow:
+                    0 8px 32px rgba(0, 0, 0, 0.08),
+                    0 2px 8px rgba(0, 0, 0, 0.05),
+                    0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+            }
+
+            .step-indicator {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                margin-bottom: 24px;
+                flex-wrap: wrap;
+            }
+
+            .step-dot {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                font-weight: 700;
+                transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                letter-spacing: -0.2px;
+                position: relative;
+            }
+
+            .step-dot.active {
+                background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
+                color: #fff;
+                box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+                transform: scale(1.1);
+            }
+
+            .step-dot.done {
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: #fff;
+                box-shadow: 0 3px 12px rgba(16, 185, 129, 0.3);
+            }
+
+            .step-dot.pending {
+                background: rgba(229, 231, 235, 0.7);
+                color: #9ca3af;
+                border: 2px dashed #d1d5db;
+            }
+
+            .step-connector {
+                width: 28px;
+                height: 2px;
+                border-radius: 4px;
+                transition: all 0.35s ease;
+                background: #e5e7eb;
+            }
+
+            .step-connector.done {
+                background: linear-gradient(90deg, #10b981, #6366f1);
+            }
+
+            .section-title {
+                font-size: 22px;
+                font-weight: 700;
+                color: #1f2937;
+                text-align: center;
+                margin-bottom: 6px;
+                letter-spacing: -0.3px;
+                background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .section-subtitle {
+                font-size: 13px;
+                color: #9ca3af;
+                text-align: center;
+                margin-bottom: 24px;
+                font-weight: 500;
+                letter-spacing: 0.2px;
+            }
+
+            .form-group {
+                margin-bottom: 18px;
+            }
+
+            .form-label {
+                display: block;
+                font-size: 13px;
+                font-weight: 600;
+                color: #4b5563;
+                margin-bottom: 6px;
+                letter-spacing: 0.1px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .form-input {
+                width: 100%;
+                padding: 12px 16px;
+                border: 1.5px solid #e5e7eb;
+                border-radius: 12px;
+                font-size: 15px;
+                font-family: inherit;
+                color: #1f2937;
+                background: rgba(255, 255, 255, 0.7);
+                transition: all 0.25s ease;
+                outline: none;
+                letter-spacing: 0.1px;
+            }
+
+            .form-input:focus {
+                border-color: #6366f1;
+                box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+                background: rgba(255, 255, 255, 0.95);
+            }
+
+            .form-input::placeholder {
+                color: #cbd5e1;
+            }
+
+            textarea.form-input {
+                resize: vertical;
+                min-height: 90px;
+                line-height: 1.5;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 13px 20px;
+                border: none;
+                border-radius: 12px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                letter-spacing: 0.2px;
+                font-family: inherit;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .btn-primary {
+                background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
+                color: #fff;
+                box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+            }
+
+            .btn-primary:hover:not(:disabled) {
+                box-shadow: 0 6px 24px rgba(99, 102, 241, 0.45);
+                transform: translateY(-2px);
+            }
+
+            .btn-primary:active:not(:disabled) {
+                transform: translateY(0);
+                box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+            }
+
+            .btn-secondary {
+                background: rgba(255, 255, 255, 0.7);
+                color: #4b5563;
+                border: 1.5px solid #e5e7eb;
+                margin-top: 10px;
+            }
+
+            .btn-secondary:hover:not(:disabled) {
+                background: rgba(255, 255, 255, 0.9);
+                border-color: #d1d5db;
+                transform: translateY(-1px);
+            }
+
+            .btn:disabled {
+                opacity: 0.55;
+                cursor: not-allowed;
+                transform: none !important;
+                box-shadow: none !important;
+            }
+
+            .btn .spinner {
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+                border: 2px solid rgba(255, 255, 255, 0.4);
+                border-top-color: #fff;
+                border-radius: 50%;
+                animation: spin 0.7s linear infinite;
+                margin-right: 8px;
+                vertical-align: middle;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .alert {
+                padding: 12px 16px;
+                border-radius: 12px;
+                font-size: 13px;
+                font-weight: 500;
+                margin-bottom: 16px;
+                letter-spacing: 0.2px;
+                animation: fadeSlideIn 0.35s ease-out;
+                display: flex;
+                align-items: flex-start;
+                gap: 8px;
+                line-height: 1.4;
+            }
+
+            .alert-error {
+                background: linear-gradient(135deg, rgba(254, 226, 226, 0.8) 0%, rgba(252, 213, 213, 0.7) 100%);
+                color: #991b1b;
+                border: 1px solid rgba(239, 68, 68, 0.25);
+            }
+
+            .alert-error::before {
+                content: '⚠';
+                font-size: 15px;
+                flex-shrink: 0;
+            }
+
+            .alert-success {
+                background: linear-gradient(135deg, rgba(209, 250, 229, 0.8) 0%, rgba(187, 247, 208, 0.7) 100%);
+                color: #065f46;
+                border: 1px solid rgba(16, 185, 129, 0.25);
+            }
+
+            .alert-success::before {
+                content: '✓';
+                font-size: 15px;
+                font-weight: 700;
+                flex-shrink: 0;
+            }
+
+            .template-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                max-height: 340px;
+                overflow-y: auto;
+                scroll-behavior: smooth;
+            }
+
+            .template-list::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            .template-list::-webkit-scrollbar-track {
+                background: transparent;
+                border-radius: 10px;
+            }
+
+            .template-list::-webkit-scrollbar-thumb {
+                background: #d1d5db;
+                border-radius: 10px;
+            }
+
+            .template-item {
+                padding: 16px 18px;
+                border-radius: 12px;
+                margin-bottom: 10px;
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(249, 250, 251, 0.6) 100%);
+                border: 1px solid rgba(229, 231, 235, 0.6);
+                transition: all 0.25s ease;
+                cursor: default;
+            }
+
+            .template-item:hover {
+                background: rgba(255, 255, 255, 0.9);
+                border-color: #d1d5db;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+                transform: translateX(2px);
+            }
+
+            .template-item-name {
+                font-weight: 700;
+                color: #1f2937;
+                font-size: 15px;
+                letter-spacing: -0.2px;
+                margin-bottom: 3px;
+            }
+
+            .template-item-subject {
+                font-size: 13px;
+                color: #6b7280;
+                letter-spacing: 0.1px;
+            }
+
+            .template-item-id {
+                font-size: 11px;
+                color: #9ca3af;
+                margin-top: 4px;
+                font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+                letter-spacing: 0.3px;
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 32px 16px;
+                color: #9ca3af;
+            }
+
+            .empty-state-icon {
+                font-size: 40px;
+                margin-bottom: 10px;
+            }
+
+            .nav-row {
+                display: flex;
+                gap: 10px;
+                margin-top: 12px;
+                flex-wrap: wrap;
+            }
+
+            .nav-row .btn {
+                flex: 1;
+                min-width: 120px;
+                font-size: 13px;
+                padding: 10px 14px;
+            }
+
+            .badge {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 0.3px;
+                text-transform: uppercase;
+            }
+
+            .badge-id {
+                background: rgba(99, 102, 241, 0.1);
+                color: #6366f1;
+                margin-left: 6px;
+            }
+
+            @media (max-width: 480px) {
+                .card {
+                    padding: 22px 16px;
+                    border-radius: 16px;
+                }
+                .section-title {
+                    font-size: 19px;
+                }
+                .form-input {
+                    padding: 10px 14px;
+                    font-size: 14px;
+                }
+                .btn {
+                    padding: 11px 16px;
+                    font-size: 14px;
+                }
+                .step-dot {
+                    width: 30px;
+                    height: 30px;
+                    font-size: 11px;
+                }
+                .step-connector {
+                    width: 18px;
+                }
+            }
+        `;
+
+            _clearMessages() {
+                this.error = '';
+                this.success = '';
+            }
+
+            _setError(msg) {
+                this.error = msg;
+                this.success = '';
+            }
+
+            _setSuccess(msg) {
+                this.success = msg;
+                this.error = '';
+            }
+
+            async _handleLogin(e) {
+                if (e) e.preventDefault();
+                this._clearMessages();
+                if (!this.username.trim() || !this.password.trim()) {
+                    this._setError('Please enter both username and password.');
+                    return;
+                }
+                this.loading = true;
+                try {
+                    const res = await fetch('http://localhost:8080/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            username: this.username.trim(),
+                            password: this.password,
+                        }),
+                    });
+                    if (!res.ok) {
+                        const errText = await res.text().catch(() => 'Login failed');
+                        throw new Error(`Login failed (${res.status}): ${errText}`);
+                    }
+                    const data = await res.json();
+                    const jwt = data?.token || data?.accessToken || data?.jwt || '';
+                    if (!jwt) {
+                        throw new Error('No token received from server.');
+                    }
+                    this.token = jwt;
+                    localStorage.setItem('jwt_token', jwt);
+                    this._setSuccess('Login successful! Redirecting...');
+                    setTimeout(() => {
+                        this.step = 2;
+                        this.success = '';
+                        this.password = '';
+                    }, 600);
+                } catch (err) {
+                    this._setError(err.message || 'Network error during login.');
+                } finally {
+                    this.loading = false;
+                }
+            }
+
+            async _handleCreateTemplate(e) {
+                if (e) e.preventDefault();
+                this._clearMessages();
+                if (!this.templateName.trim() || !this.subject.trim() || !this.body.trim()) {
+                    this._setError('Please fill in all template fields.');
+                    return;
+                }
+                this.loading = true;
+                try {
+                    const res = await fetch('http://localhost:8080/api/template', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.token}`,
+                        },
+                        body: JSON.stringify({
+                            name: this.templateName.trim(),
+                            subject: this.subject.trim(),
+                            body: this.body.trim(),
+                        }),
+                    });
+                    if (!res.ok) {
+                        const errText = await res.text().catch(() => 'Template creation failed');
+                        throw new Error(`Failed (${res.status}): ${errText}`);
+                    }
+                    const data = await res.json();
+                    const createdId = data?.id || data?.templateId || data?.template_id || '';
+                    this.createdTemplateId = createdId ? String(createdId) : '';
+                    if (this.createdTemplateId) {
+                        this.templateId = this.createdTemplateId;
+                    }
+                    this._setSuccess('Template created successfully! Redirecting...');
+                    setTimeout(() => {
+                        this.step = 3;
+                        this.success = '';
+                        this.templateName = '';
+                        this.subject = '';
+                        this.body = '';
+                    }, 600);
+                } catch (err) {
+                    this._setError(err.message || 'Network error during template creation.');
+                } finally {
+                    this.loading = false;
+                }
+            }
+
+            async _handleSendNotification(e) {
+                if (e) e.preventDefault();
+                this._clearMessages();
+                if (!this.templateId.trim() || !this.userName.trim() || !this.userEmail.trim() || !this
+                    .userPhone.trim()) {
+                    this._setError('Please fill in all notification fields.');
+                    return;
+                }
+                this.loading = true;
+                try {
+                    const res = await fetch('http://localhost:8080/api/notifications', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.token}`,
+                        },
+                        body: JSON.stringify({
+                            templateId: this.templateId.trim(),
+                            USER_NAME: this.userName.trim(),
+                            USER_EMAIL: this.userEmail.trim(),
+                            USER_PHONE: this.userPhone.trim(),
+                        }),
+                    });
+                    if (!res.ok) {
+                        const errText = await res.text().catch(() => 'Notification failed');
+                        throw new Error(`Failed (${res.status}): ${errText}`);
+                    }
+                    this._setSuccess('Notification sent successfully! Loading templates...');
+                    this.userName = '';
+                    this.userEmail = '';
+                    this.userPhone = '';
+                    this.templateId = '';
+                    this.createdTemplateId = '';
+                    setTimeout(() => {
+                        this.step = 4;
+                        this.success = '';
+                        this._fetchTemplates();
+                    }, 500);
+                } catch (err) {
+                    this._setError(err.message || 'Network error sending notification.');
+                } finally {
+                    this.loading = false;
+                }
+            }
+
+            async _fetchTemplates() {
+                this._clearMessages();
+                this.loading = true;
+                try {
+                    const res = await fetch('http://localhost:8080/api/template', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${this.token}`,
+                        },
+                    });
+                    if (!res.ok) {
+                        const errText = await res.text().catch(() => 'Failed to fetch templates');
+                        throw new Error(`Failed (${res.status}): ${errText}`);
+                    }
+                    const data = await res.json();
+                    const list = Array.isArray(data) ? data : (data?.templates || data?.data || []);
+                    this.templates = Array.isArray(list) ? list : [];
+                    if (this.templates.length === 0) {
+                        this._setError('');
+                    }
+                } catch (err) {
+                    this._setError(err.message || 'Network error fetching templates.');
+                    this.templates = [];
+                } finally {
+                    this.loading = false;
+                }
+            }
+
+            _goToStep(s) {
+                this._clearMessages();
+                this.step = s;
+                if (s === 4) {
+                    this._fetchTemplates();
+                }
+            }
+
+            _renderStepIndicator() {
+                const dots = [];
+                for (let i = 1; i <= 4; i++) {
+                    let stateClass = 'pending';
+                    if (i < this.step) stateClass = 'done';
+                    if (i === this.step) stateClass = 'active';
+                    dots.push(html`
+                <span class="step-dot ${stateClass}" title="Step ${i}">
+                  ${i < this.step ? '✓' : i}
+                </span>
+              `);
+                    if (i < 4) {
+                        const connClass = i < this.step ? 'done' : '';
+                        dots.push(html`<span class="step-connector ${connClass}"></span>`);
+                    }
+                }
+                return html`<div class="step-indicator">${dots}</div>`;
+            }
+
+            _renderLogin() {
+                return html`
+            <form @submit=${this._handleLogin}>
+              <h2 class="section-title">Welcome Back</h2>
+              <p class="section-subtitle">Sign in to manage notifications</p>
+              ${this.error ? html`<div class="alert alert-error">${this.error}</div>` : ''}
+              ${this.success ? html`<div class="alert alert-success">${this.success}</div>` : ''}
+              <div class="form-group">
+                <label class="form-label" for="login-username">Username</label>
+                <input
+                  id="login-username"
+                  class="form-input"
+                  type="text"
+                  placeholder="Enter your username"
+                  .value=${this.username}
+                  @input=${(e) => { this.username = e.target.value; this._clearMessages(); }}
+                  ?disabled=${this.loading}
+                  autocomplete="username"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="login-password">Password</label>
+                <input
+                  id="login-password"
+                  class="form-input"
+                  type="password"
+                  placeholder="Enter your password"
+                  .value=${this.password}
+                  @input=${(e) => { this.password = e.target.value; this._clearMessages(); }}
+                  ?disabled=${this.loading}
+                  autocomplete="current-password"
+                />
+              </div>
+              <button type="submit" class="btn btn-primary" ?disabled=${this.loading}>
+                ${this.loading ? html`<span class="spinner"></span>Signing in...` : 'Sign In'}
+              </button>
+            </form>
+          `;
+            }
+
+            _renderCreateTemplate() {
+                return html`
+            <form @submit=${this._handleCreateTemplate}>
+              <h2 class="section-title">Create Template</h2>
+              <p class="section-subtitle">Define a new notification template</p>
+              ${this.error ? html`<div class="alert alert-error">${this.error}</div>` : ''}
+              ${this.success ? html`<div class="alert alert-success">${this.success}</div>` : ''}
+              <div class="form-group">
+                <label class="form-label" for="tpl-name">Template Name</label>
+                <input
+                  id="tpl-name"
+                  class="form-input"
+                  type="text"
+                  placeholder="e.g. Welcome Email"
+                  .value=${this.templateName}
+                  @input=${(e) => { this.templateName = e.target.value; this._clearMessages(); }}
+                  ?disabled=${this.loading}
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="tpl-subject">Subject</label>
+                <input
+                  id="tpl-subject"
+                  class="form-input"
+                  type="text"
+                  placeholder="e.g. Welcome to our platform!"
+                  .value=${this.subject}
+                  @input=${(e) => { this.subject = e.target.value; this._clearMessages(); }}
+                  ?disabled=${this.loading}
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="tpl-body">Body</label>
+                <textarea
+                  id="tpl-body"
+                  class="form-input"
+                  placeholder="Write your template body here..."
+                  .value=${this.body}
+                  @input=${(e) => { this.body = e.target.value; this._clearMessages(); }}
+                  ?disabled=${this.loading}
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" ?disabled=${this.loading}>
+                ${this.loading ? html`<span class="spinner"></span>Creating...` : 'Create Template'}
+              </button>
+              <button type="button" class="btn btn-secondary" @click=${() => this._goToStep(1)} ?disabled=${this.loading}>
+                ← Back to Login
+              </button>
+            </form>
+          `;
+            }
+
+            _renderSendNotification() {
+                const tidValue = this.templateId || this.createdTemplateId || '';
+                return html`
+            <form @submit=${this._handleSendNotification}>
+              <h2 class="section-title">Send Notification</h2>
+              <p class="section-subtitle">Deliver a notification to a user</p>
+              ${this.error ? html`<div class="alert alert-error">${this.error}</div>` : ''}
+              ${this.success ? html`<div class="alert alert-success">${this.success}</div>` : ''}
+              <div class="form-group">
+                <label class="form-label" for="notif-tpl-id">Template ID</label>
+                <input
+                  id="notif-tpl-id"
+                  class="form-input"
+                  type="text"
+                  placeholder="Enter template ID"
+                  .value=${tidValue}
+                  @input=${(e) => { this.templateId = e.target.value; this._clearMessages(); }}
+                  ?disabled=${this.loading}
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="notif-username">User Name</label>
+                <input
+                  id="notif-username"
+                  class="form-input"
+                  type="text"
+                  placeholder="e.g. John Doe"
+                  .value=${this.userName}
+                  @input=${(e) => { this.userName = e.target.value; this._clearMessages(); }}
+                  ?disabled=${this.loading}
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="notif-email">User Email</label>
+                <input
+                  id="notif-email"
+                  class="form-input"
+                  type="email"
+                  placeholder="e.g. john@example.com"
+                  .value=${this.userEmail}
+                  @input=${(e) => { this.userEmail = e.target.value; this._clearMessages(); }}
+                  ?disabled=${this.loading}
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="notif-phone">User Phone</label>
+                <input
+                  id="notif-phone"
+                  class="form-input"
+                  type="tel"
+                  placeholder="e.g. +1234567890"
+                  .value=${this.userPhone}
+                  @input=${(e) => { this.userPhone = e.target.value; this._clearMessages(); }}
+                  ?disabled=${this.loading}
+                />
+              </div>
+              <button type="submit" class="btn btn-primary" ?disabled=${this.loading}>
+                ${this.loading ? html`<span class="spinner"></span>Sending...` : 'Send Notification'}
+              </button>
+              <button type="button" class="btn btn-secondary" @click=${() => this._goToStep(2)} ?disabled=${this.loading}>
+                ← Back to Create Template
+              </button>
+            </form>
+          `;
+            }
+
+            _renderTemplateList() {
+                return html`
+            <h2 class="section-title">Template List</h2>
+            <p class="section-subtitle">All available notification templates</p>
+            ${this.error ? html`<div class="alert alert-error">${this.error}</div>` : ''}
+            ${this.success ? html`<div class="alert alert-success">${this.success}</div>` : ''}
+            ${this.loading
+              ? html`<div style="text-align:center;padding:24px;color:#9ca3af;">
+                    <span class="spinner" style="border-top-color:#6366f1;border-color:#e5e7eb;border-top-color:#6366f1;width:28px;height:28px;display:inline-block;"></span>
+                    <p style="margin-top:10px;font-size:13px;">Loading templates...</p>
+                  </div>`
+              : this.templates && this.templates.length > 0
+                ? html`
+                    <ul class="template-list">
+                      ${this.templates.map(
+                        (t, i) => html`
+                        <li class="template-item" key=${t?.id || i}>
+                          <div class="template-item-name">
+                            ${t?.name || 'Unnamed Template'}
+                            ${t?.id ? html`<span class="badge badge-id">ID: ${t.id}</span>` : ''}
+                          </div>
+                          <div class="template-item-subject">${t?.subject || 'No subject'}</div>
+                        </li>
+                      `
+                      )}
+                    </ul>
+                  `
+                : html`
+                    <div class="empty-state">
+                      <div class="empty-state-icon">📭</div>
+                      <p>No templates found.</p>
+                      <p style="font-size:12px;margin-top:4px;">Create one to get started.</p>
+                    </div>
+                  `}
+            <div class="nav-row">
+              <button class="btn btn-primary" @click=${() => this._goToStep(2)} style="flex:1;">
+                + New Template
+              </button>
+              <button class="btn btn-secondary" @click=${() => this._goToStep(3)} style="flex:1;">
+                Send Notification
+              </button>
+            </div>
+            <button class="btn btn-secondary" @click=${() => { this.token = ''; localStorage.removeItem('jwt_token'); this._goToStep(1); }} style="margin-top:8px;">
+              Logout & Start Over
+            </button>
+          `;
+            }
+
+            render() {
+                return html`
+            <div class="app-wrapper">
+              ${this._renderStepIndicator()}
+              <div class="card">
+                ${this.step === 1
+                  ? this._renderLogin()
+                  : this.step === 2
+                    ? this._renderCreateTemplate()
+                    : this.step === 3
+                      ? this._renderSendNotification()
+                      : this._renderTemplateList()}
+              </div>
+            </div>
+          `;
+            }
+        }
+
+        customElements.define('app-root', AppRoot);
+    </script>
+</body>
+</html>
