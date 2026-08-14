@@ -1,0 +1,228 @@
+%-------------------------
+% Resume in Latex
+% Author : Abey George
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\usepackage{graphicx}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+\RequirePackage{fontawesome}
+\usepackage{tikz}
+\usetikzlibrary{svg.path}
+
+\definecolor{cvblue}{HTML}{0E5484}
+\definecolor{black}{HTML}{130810}
+\definecolor{darkcolor}{HTML}{0F4539}
+\definecolor{cvgreen}{HTML}{3BD80D}
+\definecolor{taggreen}{HTML}{00E278}
+\definecolor{SlateGrey}{HTML}{2E2E2E}
+\definecolor{LightGrey}{HTML}{666666}
+\colorlet{name}{black}
+\colorlet{tagline}{darkcolor}
+\colorlet{heading}{darkcolor}
+\colorlet{headingrule}{cvblue}
+\colorlet{accent}{darkcolor}
+\colorlet{emphasis}{SlateGrey}
+\colorlet{body}{LightGrey}
+
+% Adjust margins for single page
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{\large#1} & \textbf{\small #2} \\
+      \textit{\large#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=0.15in]}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+\newcommand\sbullet[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{$\bullet$}}}}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    {\Huge \scshape Brijesh Nishad} \\ \vspace{1pt}
+    Uttar Pradesh, Greater Noida \\ \vspace{1pt}
+    \small
+    \href{tel:9506563150}{\raisebox{-0.1\height}\faPhone\ \underline{+91-9506563150}} ~
+    \href{mailto:bnlv1212@gmail.com}{\raisebox{-0.2\height}\faEnvelope\ \underline{bnlv1212@gmail.com}} ~
+    \href{https://linkedin.com/in/brijesh-nishad/}{\raisebox{-0.2\height}\faLinkedinSquare\ \underline{Linkedin}} ~
+    \href{https://github.com/tecresearch}{\raisebox{-0.2\height}\faGithub\ \underline{Github}} ~
+    \href{https://leetcode.com/u/mr_brijesh/}{\raisebox{-0.2\height}{\includegraphics[height=0.3cm, width=0.3cm]{leetcode.png}} \underline{LeetCode}}
+\end{center}
+
+%-----------EDUCATION-----------
+\section{EDUCATION}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {GNIOT, Greater Noida Institute of Technology}{Nov 2021 -- Jun 2025}
+      {B.Tech CSE-IOT | CGPA: 7.75/10.0}{Greater Noida, UP}
+  \resumeSubHeadingListEnd
+
+%-----------EXPERIENCE-----------
+\section{EXPERIENCE}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {HCL Technologies}{Jun 2025 -- Present}
+      {Java Full Stack Engineer}{Noida, UP}
+      \resumeItemListStart
+        \resumeItem{Engineered and deployed scalable microservices architecture handling 10K+ daily user traffic with consistent 99.9\% uptime.}\resumeItem{Optimized API response time by 40\% through efficient Redis caching strategies and asynchronous processing using Kafka.}
+\resumeItemListEnd
+
+      
+      
+    \resumeSubheading
+      {Cetpa Infotech}{Jan 2025 -- Jun 2025}
+      {Java Full Stack Developer Trainee}{Noida, UP}
+      \resumeItemListStart
+        \resumeItem{Designed and developed 4 end-to-end web applications using Spring MVC and Hibernate, ensuring robust backend.}
+\resumeItem{Implemented secure JWT-based authentication and authorization mechanisms to protect APIs, successfully handling access.}
+
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+
+%-----------TECHNICAL SKILLS-----------
+\section{TECHNICAL SKILLS}
+ \begin{itemize}[leftmargin=0.15in]
+    $\sbullet[.75] \hspace{0.1cm}$\textbf{Languages:} Java, JavaScript, SQL, HTML, CSS\newline
+    $\sbullet[.75]\hspace{0.1cm}$\textbf{Frontend:} React.js, Redux Toolkit, TailwindCSS\newline
+    $\sbullet[.75]\hspace{0.1cm}$\textbf{Backend:} Spring Boot, Hibernate, Spring Security, JUnit \newline
+    $\sbullet[.75]\hspace{0.1cm}$\textbf{Databases:} MySQL, PostgreSQL, Redis, Apache Kafka\newline
+    $\sbullet[.75] \hspace{0.1cm}$ \textbf{DevOps:} Docker, Git, GitHub Actions, Ubuntu Server 22.04\newline
+    $\sbullet[.75] \hspace{0.1cm}$ \textbf{AI:} Spring AI, OpenAI API, PGVector, RAG Architecture
+\end{itemize}
+
+
+%-----------PROJECTS-----------
+\section{PROJECTS}
+\vspace{-6pt}
+
+\resumeSubHeadingListStart
+
+\resumeProjectHeading
+{\textbf{\large{\underline{ConnectMe Communication Platform}}} $|$ \large{\underline{Spring Boot, WebSocket, JWT}}}{Feb 2026 -- Apr 2026}
+\resumeItemListStart
+  \resumeItem{Engineered real-time chat system supporting over 1000 concurrent WebSocket connections with low latency.}
+  \resumeItem{Implemented end-to-end encryption ensuring secure transmission of over 10K daily private messages.}
+\resumeItemListEnd
+\vspace{-6pt}
+
+\resumeProjectHeading
+{\textbf{\large{\underline{AI User Management Portal}}} $|$ \large{\underline{Spring Boot, Spring AI, PGVector}}}{Dec 2025 -- Jan 2026}
+\resumeItemListStart
+\resumeItem{Developed a RAG-based AI assistant efficiently handling over 200 daily user queries with high accuracy and responsiveness.}\resumeItem{Streamlined support workflows, reducing manual tickets by 45\% through intelligent automation and improved.}
+\resumeItem{Improved user experience by delivering faster and more accurate AI-driven responses.}
+
+\resumeItemListEnd
+\vspace{-6pt}
+
+\resumeProjectHeading  
+{\textbf{\large{\underline{Corexfin Core Banking Solution}}} $|$ \large{\underline{Spring Boot, Microservices, Apache Kafka}}}{Mar 2025 -- May 2025}
+\resumeItemListStart  
+  \resumeItem{Architected scalable microservices handling over 5K financial transactions per minute efficiently with high reliability.}
+\resumeItem{Integrated Apache Kafka enabling reliable event-driven communication across multiple distributed backend services.}
+\resumeItem{Enhanced system reliability by adding logging and monitoring for faster debugging.}
+
+\resumeItemListEnd
+\vspace{-6pt}
+
+\resumeProjectHeading  
+{\textbf{\large{\underline{IoT Smart Voting Machine}}} $|$ \large{\underline{Arduino, ESP32, React.js}}}{Jan 2023 -- Jun 2024}
+\resumeItemListStart  
+  \resumeItem{Built biometric-enabled voting system achieving 99.9\% accuracy in secure voter verification processes.}
+  \resumeItem{Designed real-time dashboard monitoring over 500 simultaneous voters with actionable analytics insights.}
+\resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\vspace{-6pt}
+
+%-----------CERTIFICATIONS-----------
+\section{CERTIFICATIONS}
+\vspace{-6pt}
+\begin{itemize}[leftmargin=0.15in, itemsep=2pt]
+    $\sbullet[.75]$ Completed Java Full-Stack Certification from GUVI partnered with HCL and Percipio 
+    $\sbullet[.75]$ Optimized core algorithms in Java and C++ to reduce execution time by 40\%, directly enhancing system responsiveness for 10K+ daily transactions. 
+\end{itemize}
+\vspace{-6pt}
+
+
+%-----------ACHIEVEMENTS-----------
+\section{ACHIEVEMENTS}
+\vspace{-6pt}
+\begin{itemize}[leftmargin=0.15in, itemsep=2pt]
+    $\sbullet[.75]$ Solved 200+ LeetCode problems focusing on data structures and algorithms
+    $\sbullet[.75]$ Led R\&D Club, organized 10+ technical events for 500+ students.
+    $\sbullet[.75]$ Won Best Research Project Award at CPRC 2024 among 50+ entries
+    $\sbullet[.75]$ Secured 1st place in Technical Poster Competition for innovative project
+    $\sbullet[.75]$ Ranked in top 20\% in HCLTech AI Engineer Hackathon.
+\end{itemize}
+
+\vspace{-6pt}
+
+\end{document}
